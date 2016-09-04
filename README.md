@@ -22,7 +22,7 @@ Following [Munkhdalai & Yu 2016](http://arxiv.org/abs/1607.04315), the out of vo
 One of the most important aspects when we used fixed Glove embeddings is the "translation" layer.
 [Bowman et al. 2016](http://nlp.stanford.edu/pubs/snli_paper.pdf) use such a layer when moving from 300D to the lower dimensional 100D models.
 This is likely highly important for the summation method as it allows the GloVe space to be shifted before summation.
-Technically when done with training we could pre-compute all the "translated" GloVe embeddings and remove this layer, "winning" the parameter fight, but ¯\\_(ツ)_/¯
+Technically when done with training we could pre-compute all the "translated" GloVe embeddings and remove this layer, "winning" the parameter fight, but ¯\\\_(ツ)\_/¯
 
 The model is relatively simple yet sits at a far higher level than other comparable baselines (specifically summation, GRU, and LSTM models) listed on [the SNLI page](http://nlp.stanford.edu/projects/snli/).
 

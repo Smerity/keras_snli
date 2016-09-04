@@ -17,11 +17,12 @@ The model architecture is:
 
 Training uses RMSProp and stops when three epochs have passed with no improvement to the validation loss.
 Following [Liu et al. 2016](http://arxiv.org/abs/1605.09090), the GloVe embeddings are not updated during training.
-Unlike [Liu et al. 2016](http://arxiv.org/abs/1605.09090), I don't initialize out of vocabulary embeddings randomly and instead leave them zeroed.
-There are likely improvements that could be made by allowing training with a strong L2 penalty when moving away from the GloVe embeddings.
+Following [Munkhdalai & Yu 2016](http://arxiv.org/abs/1607.04315), the out of vocabulary embeddings remain zeroed out.
 
 One of the most important aspects when we used fixed Glove embeddings is the "translation" layer.
-[Bowman et al. 2016](http://nlp.stanford.edu/pubs/snli_paper.pdf) use 
+[Bowman et al. 2016](http://nlp.stanford.edu/pubs/snli_paper.pdf) use such a layer when moving from 300D to the lower dimensional 100D models.
+This is likely highly important for the summation method as it allows the GloVe space to be shifted before summation.
+Technically when done with training we could pre-compute all the "translated" GloVe embeddings and remove this layer, "winning" the parameter fight, but ¯\_(ツ)_/¯
 
 The model is relatively simple yet sits at a far higher level than other comparable baselines (specifically summation, GRU, and LSTM models) listed on [the SNLI page](http://nlp.stanford.edu/projects/snli/).
 

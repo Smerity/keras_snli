@@ -83,14 +83,14 @@ LABELS = {'contradiction': 0, 'neutral': 1, 'entailment': 2}
 RNN = recurrent.LSTM
 RNN = recurrent.GRU
 # Summation of word embeddings
-#RNN = None
+RNN = None
 LAYERS = 1
 USE_GLOVE = True
 TRAIN_EMBED = False
 EMBED_HIDDEN_SIZE = 300
 SENT_HIDDEN_SIZE = 300
 BATCH_SIZE = 512
-PATIENCE = 3
+PATIENCE = 8
 MAX_EPOCHS = 42
 MAX_LEN = 42
 DP = 0.2

@@ -20,13 +20,27 @@ Following [Liu et al. 2016](http://arxiv.org/abs/1605.09090), the GloVe embeddin
 Unlike [Liu et al. 2016](http://arxiv.org/abs/1605.09090), I don't initialize out of vocabulary embeddings randomly and instead leave them zeroed.
 There are likely improvements that could be made by allowing training with a strong L2 penalty when moving away from the GloVe embeddings.
 
+One of the most important aspects when we used fixed Glove embeddings is the "translation" layer.
+[Bowman et al. 2016](http://nlp.stanford.edu/pubs/snli_paper.pdf) use 
+
 The model is relatively simple yet sits at a far higher level than other comparable baselines (specifically summation, GRU, and LSTM models) listed on [the SNLI page](http://nlp.stanford.edu/projects/snli/).
 
 Model                                              | Parameters | Train  | Validation | Test
 ---                                                | ---        | ---    | ---        | ---
-300D sum(word vectors) + Translate + 3 x 600D ReLU | 1.2m       | 0.8315 | 0.8235     | **0.8249**
-300D GRU + Translate + 3 x 600D ReLU               | 1.7m       | 0.8431 | 0.8303     | 0.8233
-300D LSTM + Translate + 3 x 600D ReLU              | 1.9m       | 0.8551 | 0.8286     | 0.8229
+300D sum(word vectors) + 3 x 600D ReLU (this code) | 1.2m       | 0.831  | 0.823      | 0.825
+300D GRU + 3 x 600D ReLU (this code)               | 1.7m       | 0.843  | 0.830      | 0.823
+300D LSTM + 3 x 600D ReLU (this code)              | 1.9m       | 0.855  | 0.829      | 0.823
+--                                                | ---        | ---    | ---        | ---
+300D LSTM encoders (Bowman et al. 2016)            | 3.0m       | 0.839  | -          | 0.806
+1024D GRU w/ unsupervised 'skip-thoughts' pre-training (Vendrov et al. 2015) | 15m | 0.988 | - | 0.814
+300D Tree-based CNN encoders (Mou et al. 2015)     | 3.5m       | 0.833  | -          | 0.821
+300D SPINN-PI encoders (Bowman et al. 2016)        | 3.7m       | 0.892  | -          | 0.832
+600D (300+300) BiLSTM encoders (Liu et al. 2016)   | 3.5m       | 0.833  | -          | 0.834
+
+Only the numbers for pure sentential embedding models are shown here.
+The SNLI homepage shows the full list of models where attentional models perform better.
+If I've missed including any comparable models, submit a pull request.
 
 All models could benefit from a more thorough evaluation and/or grid search as the existing parameters are guesstimates inspired by various papers (Bowman et al. 2015, Bowman et al. 2016, Liu et al. 2016).
-That the summation of word embeddings (jokingly referred to as SumRNN) performs so well when compared to GRU or LSTM is a surprise and warrants additional investigation.
+That the summation of word embeddings (jokingly referred to as SumRNN) performs so well compared to GRUs or LSTMs is a surprise and warrants additional investigation.
+Further work should be done exploring The hyperparameters of the GRU and LSTM such that they beat the SumRNN.

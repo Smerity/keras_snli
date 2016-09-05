@@ -147,7 +147,7 @@ else:
   embed = Embedding(VOCAB, EMBED_HIDDEN_SIZE, input_length=MAX_LEN)
 
 rnn_kwargs = dict(output_dim=SENT_HIDDEN_SIZE, consume_less='gpu', dropout_W=DP)
-SumEmbeddings = keras.layers.core.Lambda(lambda x: K.sum(x, axis=1))
+SumEmbeddings = keras.layers.core.Lambda(lambda x: K.sum(x, axis=1), output_shape=(SENT_HIDDEN_SIZE, ))
 
 translate = TimeDistributed(Dense(SENT_HIDDEN_SIZE, activation=ACTIVATION))
 

@@ -36,6 +36,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.layers import merge, recurrent, Dense, Input, Dropout, TimeDistributed
 from keras.layers.embeddings import Embedding
 from keras.layers.normalization import BatchNormalization
+from keras.layers.wrappers import Bidirectional
 from keras.models import Model
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
@@ -80,8 +81,10 @@ tokenizer.fit_on_texts(training[0] + training[1])
 # Lowest index from the tokenizer is 1 - we need to include 0 in our vocab count
 VOCAB = len(tokenizer.word_counts) + 1
 LABELS = {'contradiction': 0, 'neutral': 1, 'entailment': 2}
-RNN = recurrent.LSTM
-RNN = recurrent.GRU
+#RNN = recurrent.LSTM
+#RNN = lambda *args, **kwargs: Bidirectional(recurrent.LSTM(*args, **kwargs))
+#RNN = recurrent.GRU
+#RNN = lambda *args, **kwargs: Bidirectional(recurrent.GRU(*args, **kwargs))
 # Summation of word embeddings
 RNN = None
 LAYERS = 1
@@ -146,7 +149,7 @@ if USE_GLOVE:
 else:
   embed = Embedding(VOCAB, EMBED_HIDDEN_SIZE, input_length=MAX_LEN)
 
-rnn_kwargs = dict(output_dim=SENT_HIDDEN_SIZE, consume_less='gpu', dropout_W=DP)
+rnn_kwargs = dict(output_dim=SENT_HIDDEN_SIZE, dropout_W=DP, dropout_U=DP)
 SumEmbeddings = keras.layers.core.Lambda(lambda x: K.sum(x, axis=1), output_shape=(SENT_HIDDEN_SIZE, ))
 
 translate = TimeDistributed(Dense(SENT_HIDDEN_SIZE, activation=ACTIVATION))

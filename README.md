@@ -32,6 +32,8 @@ Model                                              | Parameters | Train  | Valid
 300D sum(word vectors) + 3 x 600D ReLU (this code) | 1.2m       | 0.831  | 0.823      | 0.825
 300D GRU + 3 x 600D ReLU (this code)               | 1.7m       | 0.843  | 0.830      | 0.823
 300D LSTM + 3 x 600D ReLU (this code)              | 1.9m       | 0.855  | 0.829      | 0.823
+300D GRU (recurrent dropout) + 3 x 600D ReLU (this code)               | 1.7m       | 0.844  | 0.832      | 0.832
+300D LSTM (recurrent dropout) + 3 x 600D ReLU (this code)               | 1.9m       | 0.852  | 0.836      | 0.827
 --                                                 | ---        | ---    | ---        | ---
 300D LSTM encoders (Bowman et al. 2016)            | 3.0m       | 0.839  | -          | 0.806
 1024D GRU w/ unsupervised 'skip-thoughts' pre-training (Vendrov et al. 2015) | 15m | 0.988 | - | 0.814
@@ -44,5 +46,5 @@ The [SNLI homepage](http://nlp.stanford.edu/projects/snli/) shows the full list 
 If I've missed including any comparable models, submit a pull request.
 
 All models could benefit from a more thorough evaluation and/or grid search as the existing parameters are guesstimates inspired by various papers (Bowman et al. 2015, Bowman et al. 2016, Liu et al. 2016).
-That the summation of word embeddings (jokingly referred to as SumRNN) performs so well compared to GRUs or LSTMs is a surprise and warrants additional investigation.
-Further work should be done exploring the hyperparameters of the GRU and LSTM such that they beat the SumRNN baseline.
+Only when the GRUs and LSTMs feature recurrent dropout (`dropout_U`) do they consistently beat the summation of word embeddings.
+Further work should be done exploring the hyperparameters of the GRU and LSTM.

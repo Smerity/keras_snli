@@ -43,6 +43,8 @@ from keras.preprocessing.text import Tokenizer
 from keras.regularizers import l2
 from keras.utils import np_utils
 
+from spacy.en import English
+
 def extract_tokens_from_binary_parse(parse):
     return parse.replace('(', ' ').replace(')', ' ').replace('-LRB-', '(').replace('-RRB-', ')').split()
 
@@ -88,11 +90,13 @@ LABELS = {'contradiction': 0, 'neutral': 1, 'entailment': 2}
 # Summation of word embeddings
 RNN = None
 LAYERS = 1
-USE_GLOVE = True
+USE_PRECOMPUTED_WORD_EMB = True
+USE_GLOVE = False
+USE_SPACY = True
 TRAIN_EMBED = False
 EMBED_HIDDEN_SIZE = 300
 SENT_HIDDEN_SIZE = 300
-BATCH_SIZE = 512
+BATCH_SIZE = 256
 PATIENCE = 8
 MAX_EPOCHS = 42
 MAX_LEN = 42
@@ -101,7 +105,7 @@ L2 = 4e-6
 ACTIVATION = 'relu'
 OPTIMIZER = 'rmsprop'
 print('RNN / Embed / Sent = {}, {}, {}'.format(RNN, EMBED_HIDDEN_SIZE, SENT_HIDDEN_SIZE))
-print('GloVe / Trainable Word Embeddings = {}, {}'.format(USE_GLOVE, TRAIN_EMBED))
+print('GloVe / Spacy / Trainable Word Embeddings = {}, {}, {}'.format(USE_GLOVE, USE_SPACY, TRAIN_EMBED))
 
 to_seq = lambda X: pad_sequences(tokenizer.texts_to_sequences(X), maxlen=MAX_LEN)
 prepare_data = lambda data: (to_seq(data[0]), to_seq(data[1]), data[2])
@@ -113,9 +117,9 @@ test = prepare_data(test)
 print('Build model...')
 print('Vocab size =', VOCAB)
 
-GLOVE_STORE = 'precomputed_glove.weights'
+WEMB_STORE = 'precomputed_wemb.weights'
 if USE_GLOVE:
-  if not os.path.exists(GLOVE_STORE):
+  if not os.path.exists(WEMB_STORE):
     print('Computing GloVe')
   
     embeddings_index = {}
@@ -137,15 +141,40 @@ if USE_GLOVE:
       else:
         print('Missing from GloVe: {}'.format(word))
   
-    np.save(open(GLOVE_STORE, 'w'), embedding_matrix)
+    np.save(open(WEMB_STORE, 'w'), embedding_matrix)
 
   print('Loading GloVe')
-  embedding_matrix = np.load(open(GLOVE_STORE))
+  embedding_matrix = np.load(open(WEMB_STORE))
 
   print('Total number of null word embeddings:')
   print(np.sum(np.sum(embedding_matrix, axis=1) == 0))
 
   embed = Embedding(VOCAB, EMBED_HIDDEN_SIZE, weights=[embedding_matrix], input_length=MAX_LEN, trainable=TRAIN_EMBED)
+elif USE_SPACY:
+  nlp = English()
+  if not os.path.exists(WEMB_STORE):
+    print('Computing Spacy')
+    
+    # prepare embedding matrix
+    embedding_matrix = np.zeros((VOCAB, EMBED_HIDDEN_SIZE))
+    for word, i in tokenizer.word_index.iteritems():
+      embedding_vector = nlp(unicode(word)).vector
+      if embedding_vector is not None:
+        # words not found in embedding index will be all-zeros.
+        embedding_matrix[i] = embedding_vector
+      else:
+        print('Missing from Spacy: {}'.format(word))
+  
+    np.save(open(WEMB_STORE, 'w'), embedding_matrix)
+
+  print('Loading Spacy word mbedding matrix')
+  embedding_matrix = np.load(open(WEMB_STORE))
+
+  print('Total number of null word embeddings:')
+  print(np.sum(np.sum(embedding_matrix, axis=1) == 0))
+
+  embed = Embedding(VOCAB, EMBED_HIDDEN_SIZE, weights=[embedding_matrix], input_length=MAX_LEN, trainable=TRAIN_EMBED)
+  
 else:
   embed = Embedding(VOCAB, EMBED_HIDDEN_SIZE, input_length=MAX_LEN)
 

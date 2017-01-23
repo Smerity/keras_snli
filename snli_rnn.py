@@ -52,8 +52,8 @@ def yield_examples(fn, skip_no_majority=True, limit=None):
       break
     data = json.loads(line)
     label = data['gold_label']
-    s1 = bytes(' '.join(extract_tokens_from_binary_parse(data['sentence1_binary_parse'])))
-    s2 = bytes(' '.join(extract_tokens_from_binary_parse(data['sentence2_binary_parse'])))
+    s1 = ' '.join(extract_tokens_from_binary_parse(data['sentence1_binary_parse']))
+    s2 = ' '.join(extract_tokens_from_binary_parse(data['sentence2_binary_parse']))
     if skip_no_majority and label == '-':
       continue
     yield (label, s1, s2)
@@ -93,7 +93,7 @@ TRAIN_EMBED = False
 EMBED_HIDDEN_SIZE = 300
 SENT_HIDDEN_SIZE = 300
 BATCH_SIZE = 512
-PATIENCE = 8
+PATIENCE = 4 # 8
 MAX_EPOCHS = 42
 MAX_LEN = 42
 DP = 0.2

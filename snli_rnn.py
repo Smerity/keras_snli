@@ -115,13 +115,13 @@ print('Vocab size =', VOCAB)
 
 GLOVE_STORE = 'precomputed_glove.weights'
 if USE_GLOVE:
-  if not os.path.exists(GLOVE_STORE):
+  if not os.path.exists(GLOVE_STORE + '.npy'):
     print('Computing GloVe')
   
     embeddings_index = {}
     f = open('glove.840B.300d.txt')
     for line in f:
-      values = line.split()
+      values = line.split(' ')
       word = values[0]
       coefs = np.asarray(values[1:], dtype='float32')
       embeddings_index[word] = coefs
@@ -129,7 +129,7 @@ if USE_GLOVE:
     
     # prepare embedding matrix
     embedding_matrix = np.zeros((VOCAB, EMBED_HIDDEN_SIZE))
-    for word, i in tokenizer.word_index.iteritems():
+    for word, i in tokenizer.word_index.items():
       embedding_vector = embeddings_index.get(word)
       if embedding_vector is not None:
         # words not found in embedding index will be all-zeros.
@@ -137,10 +137,10 @@ if USE_GLOVE:
       else:
         print('Missing from GloVe: {}'.format(word))
   
-    np.save(open(GLOVE_STORE, 'w'), embedding_matrix)
+    np.save(GLOVE_STORE, embedding_matrix)
 
   print('Loading GloVe')
-  embedding_matrix = np.load(open(GLOVE_STORE))
+  embedding_matrix = np.load(GLOVE_STORE + '.npy')
 
   print('Total number of null word embeddings:')
   print(np.sum(np.sum(embedding_matrix, axis=1) == 0))
